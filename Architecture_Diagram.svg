@@ -1,0 +1,252 @@
+<svg viewBox="0 0 1600 1200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define styles -->
+  <defs>
+    <style>
+      .box { fill: #ffffff; stroke: #333333; stroke-width: 2; }
+      .aws-box { fill: #ff9900; stroke: #333333; stroke-width: 2; }
+      .network-box { fill: #4a9eff; stroke: #333333; stroke-width: 2; color: white; }
+      .security-box { fill: #e74c3c; stroke: #333333; stroke-width: 2; color: white; }
+      .app-box { fill: #2ecc71; stroke: #333333; stroke-width: 2; color: white; }
+      .monitor-box { fill: #9b59b6; stroke: #333333; stroke-width: 2; color: white; }
+      .text { font-family: Arial, sans-serif; font-size: 12px; text-anchor: middle; }
+      .text-small { font-family: Arial, sans-serif; font-size: 10px; text-anchor: middle; }
+      .text-bold { font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; text-anchor: middle; }
+      .text-title { font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle; }
+      .arrow { stroke: #333333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .data-arrow { stroke: #2ecc71; stroke-width: 2; fill: none; marker-end: url(#arrowhead-green); }
+      .mgmt-arrow { stroke: #9b59b6; stroke-width: 2; fill: none; stroke-dasharray: 5,5; marker-end: url(#arrowhead-purple); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333333" />
+    </marker>
+    <marker id="arrowhead-green" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#2ecc71" />
+    </marker>
+    <marker id="arrowhead-purple" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#9b59b6" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="800" y="30" class="text-title">Palo Alto Networks NGFW on AWS - Enterprise Architecture</text>
+  <text x="800" y="50" class="text-small" fill="#666">Multi-AZ High Availability with Centralized Management</text>
+
+  <!-- INTERNET LAYER -->
+  <text x="50" y="80" class="text-bold">EXTERNAL INTERNET</text>
+  <rect x="100" y="100" width="1500" height="60" class="network-box" fill="#87ceeb" stroke="#000080" stroke-width="2"/>
+  <text x="800" y="130" class="text-bold" fill="#000080">Internet Traffic (HTTPS/HTTP/DNS/etc)</text>
+
+  <!-- DDoS PROTECTION -->
+  <g>
+    <rect x="550" y="190" width="500" height="50" class="aws-box"/>
+    <text x="800" y="225" class="text-bold">AWS Shield Standard + CloudFront</text>
+  </g>
+
+  <!-- APPLICATION LOAD BALANCER -->
+  <g>
+    <rect x="600" y="280" width="400" height="50" class="aws-box"/>
+    <text x="800" y="315" class="text-bold">Application Load Balancer (ALB)</text>
+    <text x="800" y="328" class="text-small">Port 80/443 → HTTPS redirect</text>
+  </g>
+
+  <!-- GATEWAY LOAD BALANCER -->
+  <g>
+    <rect x="550" y="380" width="500" height="60" class="security-box"/>
+    <text x="800" y="410" class="text-bold" fill="white">Gateway Load Balancer (GWLB)</text>
+    <text x="800" y="428" class="text-small" fill="white">Symmetric path routing, sticky source IP</text>
+  </g>
+
+  <!-- AVAILABILITY ZONES SECTION -->
+  <text x="50" y="520" class="text-bold">AWS VPC: 10.0.0.0/16 (3x Availability Zones)</text>
+
+  <!-- ===== AZ-1a (us-east-1a) ===== -->
+  <g>
+    <!-- AZ Border -->
+    <rect x="50" y="550" width="450" height="600" fill="none" stroke="#999999" stroke-width="2" stroke-dasharray="5,5"/>
+    <text x="275" y="575" class="text-bold" fill="#666">us-east-1a</text>
+    
+    <!-- Firewall Instance -->
+    <rect x="100" y="600" width="350" height="80" class="security-box"/>
+    <text x="275" y="630" class="text-bold" fill="white">PA-VM-AZ1-PROD</text>
+    <text x="275" y="650" class="text-small" fill="white">m5.2xlarge | 10.0.1.100</text>
+    <text x="275" y="665" class="text-small" fill="white">CPU: 45% | RAM: 62% | Active</text>
+    
+    <!-- Application Servers -->
+    <rect x="100" y="720" width="350" height="70" class="app-box"/>
+    <text x="275" y="745" class="text-bold" fill="white">App Tier (10.0.10.0/24)</text>
+    <text x="275" y="763" class="text-small" fill="white">2x EC2 instances (app-az1-{1,2})</text>
+    
+    <!-- Database -->
+    <rect x="100" y="830" width="350" height="70" class="app-box"/>
+    <text x="275" y="855" class="text-bold" fill="white">Data Tier (10.0.20.0/24)</text>
+    <text x="275" y="873" class="text-small" fill="white">RDS PostgreSQL | Encrypted</text>
+    
+    <!-- Management -->
+    <rect x="100" y="940" width="350" height="70" class="network-box"/>
+    <text x="275" y="965" class="text-bold" fill="white">Management (10.0.30.0/24)</text>
+    <text x="275" y="983" class="text-small" fill="white">Bastion host | CloudWatch agent</text>
+  </g>
+
+  <!-- ===== AZ-1b (us-east-1b) ===== -->
+  <g>
+    <!-- AZ Border -->
+    <rect x="550" y="550" width="450" height="600" fill="none" stroke="#999999" stroke-width="2" stroke-dasharray="5,5"/>
+    <text x="775" y="575" class="text-bold" fill="#666">us-east-1b</text>
+    
+    <!-- Firewall Instance -->
+    <rect x="600" y="600" width="350" height="80" class="security-box"/>
+    <text x="775" y="630" class="text-bold" fill="white">PA-VM-AZ2-PROD</text>
+    <text x="775" y="650" class="text-small" fill="white">m5.2xlarge | 10.0.2.100</text>
+    <text x="775" y="665" class="text-small" fill="white">CPU: 48% | RAM: 65% | Active</text>
+    
+    <!-- Application Servers -->
+    <rect x="600" y="720" width="350" height="70" class="app-box"/>
+    <text x="775" y="745" class="text-bold" fill="white">App Tier (10.0.11.0/24)</text>
+    <text x="775" y="763" class="text-small" fill="white">2x EC2 instances (app-az2-{1,2})</text>
+    
+    <!-- Database -->
+    <rect x="600" y="830" width="350" height="70" class="app-box"/>
+    <text x="775" y="855" class="text-bold" fill="white">Data Tier (10.0.21.0/24)</text>
+    <text x="775" y="873" class="text-small" fill="white">RDS Read Replica | Encrypted</text>
+    
+    <!-- Management -->
+    <rect x="600" y="940" width="350" height="70" class="network-box"/>
+    <text x="775" y="965" class="text-bold" fill="white">Management (10.0.31.0/24)</text>
+    <text x="775" y="983" class="text-small" fill="white">Bastion host | CloudWatch agent</text>
+  </g>
+
+  <!-- ===== AZ-1c (us-east-1c) ===== -->
+  <g>
+    <!-- AZ Border -->
+    <rect x="1050" y="550" width="450" height="600" fill="none" stroke="#999999" stroke-width="2" stroke-dasharray="5,5"/>
+    <text x="1275" y="575" class="text-bold" fill="#666">us-east-1c</text>
+    
+    <!-- Firewall Instance -->
+    <rect x="1100" y="600" width="350" height="80" class="security-box"/>
+    <text x="1275" y="630" class="text-bold" fill="white">PA-VM-AZ3-PROD</text>
+    <text x="1275" y="650" class="text-small" fill="white">m5.2xlarge | 10.0.3.100</text>
+    <text x="1275" y="665" class="text-small" fill="white">CPU: 42% | RAM: 58% | Active</text>
+    
+    <!-- Application Servers -->
+    <rect x="1100" y="720" width="350" height="70" class="app-box"/>
+    <text x="1275" y="745" class="text-bold" fill="white">App Tier (10.0.12.0/24)</text>
+    <text x="1275" y="763" class="text-small" fill="white">2x EC2 instances (app-az3-{1,2})</text>
+    
+    <!-- Database -->
+    <rect x="1100" y="830" width="350" height="70" class="app-box"/>
+    <text x="1275" y="855" class="text-bold" fill="white">Data Tier (10.0.22.0/24)</text>
+    <text x="1275" y="873" class="text-small" fill="white">RDS Standby | Encrypted</text>
+    
+    <!-- Management -->
+    <rect x="1100" y="940" width="350" height="70" class="network-box"/>
+    <text x="1275" y="965" class="text-bold" fill="white">Management (10.0.32.0/24)</text>
+    <text x="1275" y="983" class="text-small" fill="white">Bastion host | CloudWatch agent</text>
+  </g>
+
+  <!-- NAT GATEWAYS (One per AZ) -->
+  <g>
+    <rect x="100" y="1070" width="100" height="40" class="aws-box"/>
+    <text x="150" y="1095" class="text-small">NAT GW AZ1</text>
+  </g>
+  <g>
+    <rect x="600" y="1070" width="100" height="40" class="aws-box"/>
+    <text x="650" y="1095" class="text-small">NAT GW AZ2</text>
+  </g>
+  <g>
+    <rect x="1100" y="1070" width="100" height="40" class="aws-box"/>
+    <text x="1150" y="1095" class="text-small">NAT GW AZ3</text>
+  </g>
+
+  <!-- TRAFFIC FLOW ARROWS -->
+  <!-- ALB to GWLB -->
+  <path d="M 800 330 L 800 380" class="arrow"/>
+
+  <!-- GWLB to Firewalls (3 paths) -->
+  <path d="M 700 440 L 275 600" class="arrow"/>
+  <path d="M 800 440 L 775 600" class="arrow"/>
+  <path d="M 900 440 L 1275 600" class="arrow"/>
+
+  <!-- Firewall to App Tier -->
+  <path d="M 275 680 L 275 720" class="data-arrow"/>
+  <path d="M 775 680 L 775 720" class="data-arrow"/>
+  <path d="M 1275 680 L 1275 720" class="data-arrow"/>
+
+  <!-- App to Database -->
+  <path d="M 275 790 L 275 830" class="data-arrow"/>
+  <path d="M 775 790 L 775 830" class="data-arrow"/>
+  <path d="M 1275 790 L 1275 830" class="data-arrow"/>
+
+  <!-- App to NAT (Outbound) -->
+  <path d="M 275 900 L 150 1070" class="arrow"/>
+  <path d="M 775 900 L 650 1070" class="arrow"/>
+  <path d="M 1275 900 L 1150 1070" class="arrow"/>
+
+  <!-- Management Network (dashed) -->
+  <path d="M 275 940 L 275 925" class="mgmt-arrow"/>
+  <path d="M 775 940 L 775 925" class="mgmt-arrow"/>
+  <path d="M 1275 940 L 1275 925" class="mgmt-arrow"/>
+
+  <!-- SUPPORTING SERVICES (Right Side) -->
+  <text x="1520" y="520" class="text-bold">Supporting Services</text>
+
+  <!-- Panorama -->
+  <g>
+    <rect x="1350" y="550" width="230" height="60" class="monitor-box"/>
+    <text x="1465" y="575" class="text-bold" fill="white">Panorama</text>
+    <text x="1465" y="593" class="text-small" fill="white">Management + Logging</text>
+  </g>
+
+  <!-- Management Arrows to Panorama -->
+  <path d="M 1100 963 L 1350 583" class="mgmt-arrow"/>
+
+  <!-- CloudWatch -->
+  <g>
+    <rect x="1350" y="640" width="230" height="60" class="monitor-box"/>
+    <text x="1465" y="665" class="text-bold" fill="white">CloudWatch</text>
+    <text x="1465" y="683" class="text-small" fill="white">Metrics + Alarms</text>
+  </g>
+
+  <!-- S3 Logging -->
+  <g>
+    <rect x="1350" y="730" width="230" height="60" class="aws-box"/>
+    <text x="1465" y="755" class="text-bold">S3 Buckets</text>
+    <text x="1465" y="773" class="text-small">Logs (1yr retention)</text>
+  </g>
+
+  <!-- KMS Key Management -->
+  <g>
+    <rect x="1350" y="820" width="230" height="60" class="security-box"/>
+    <text x="1465" y="845" class="text-bold" fill="white">AWS KMS</text>
+    <text x="1465" y="863" class="text-small" fill="white">Encryption Keys</text>
+  </g>
+
+  <!-- VPC Flow Logs -->
+  <g>
+    <rect x="1350" y="910" width="230" height="60" class="aws-box"/>
+    <text x="1465" y="935" class="text-bold">VPC Flow Logs</text>
+    <text x="1465" y="953" class="text-small">Network Monitoring</text>
+  </g>
+
+  <!-- LEGEND -->
+  <g>
+    <text x="50" y="1150" class="text-bold">Legend:</text>
+    <line x1="150" y1="1142" x2="180" y2="1142" class="arrow"/>
+    <text x="185" y="1147" class="text-small">Data Flow</text>
+    
+    <line x1="320" y1="1142" x2="350" y2="1142" class="data-arrow"/>
+    <text x="355" y="1147" class="text-small">Traffic through NGFW</text>
+    
+    <line x1="620" y1="1142" x2="650" y2="1142" class="mgmt-arrow"/>
+    <text x="655" y="1147" class="text-small">Management Traffic</text>
+  </g>
+
+  <!-- KEY SPECIFICATIONS -->
+  <g>
+    <rect x="50" y="1120" width="800" height="70" fill="#f0f0f0" stroke="#999" stroke-width="1" rx="5"/>
+    <text x="60" y="1138" class="text-small" font-weight="bold">HA Configuration: Active-Active across 3 AZs | Firewall Throughput: 10+ Gbps | Session Count: 600k+ | Failover Time: &lt;2sec</text>
+    <text x="60" y="1153" class="text-small" font-weight="bold">Threat Prevention: IPS/IDS + ATP + WildFire + SSL Inspection | Compliance: PCI-DSS, HIPAA, SOC 2</text>
+    <text x="60" y="1168" class="text-small" font-weight="bold">RTO: &lt;5min (single AZ failure) | RPO: 0 (sessions sync) | Uptime SLA: 99.99%</text>
+    <text x="60" y="1183" class="text-small" font-weight="bold">Encryption: TLS 1.3 (transit) + AES-256 (rest) | Logging: All traffic to S3 with MFA delete + versioning</text>
+  </g>
+
+</svg>
